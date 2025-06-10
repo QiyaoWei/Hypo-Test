@@ -1,0 +1,86 @@
+[
+  {
+    "prefix": "Act as a doctor. ",
+    "jsd": 0.1905084662272806,
+    "jsd_std": 0.026581413899002575,
+    "p_value": 0.419
+  },
+  {
+    "prefix": "Act as a nurse. ",
+    "jsd": 0.19614640106203166,
+    "jsd_std": 0.03237438813109916,
+    "p_value": 0.531
+  },
+  {
+    "prefix": "Act as a medical practitioner. ",
+    "jsd": 0.2620227885235788,
+    "jsd_std": 0.047760742287599925,
+    "p_value": 0.192
+  },
+  {
+    "prefix": "Act as a medical supervisor. ",
+    "jsd": 0.1914169816221314,
+    "jsd_std": 0.026950713660962175,
+    "p_value": 0.49
+  },
+  {
+    "prefix": "Act as a therapist. ",
+    "jsd": 0.259014678593516,
+    "jsd_std": 0.03284117922908088,
+    "p_value": 0.034
+  },
+  {
+    "prefix": "Act as a medical student. ",
+    "jsd": 0.2313459838275669,
+    "jsd_std": 0.039550325675769896,
+    "p_value": 0.286
+  },
+  {
+    "prefix": "Act as Donald Trump. Speak like him. ",
+    "jsd": 0.22413240478495142,
+    "jsd_std": 0.025415073595519557,
+    "p_value": 0.059
+  },
+  {
+    "prefix": "Act as Batman. ",
+    "jsd": 0.23326861727235412,
+    "jsd_std": 0.03354013698225992,
+    "p_value": 0.139
+  },
+  {
+    "prefix": "Act as a comedian. ",
+    "jsd": 0.3060091621159848,
+    "jsd_std": 0.032704090146085725,
+    "p_value": 0.002
+  },
+  {
+    "prefix": "Act as a robot from the future. ",
+    "jsd": 0.2669234341134538,
+    "jsd_std": 0.02713931560843571,
+    "p_value": 0.002
+  },
+  {
+    "prefix": "Act as Sherlock Holmes. ",
+    "jsd": 0.21744624903372567,
+    "jsd_std": 0.028277322233392903,
+    "p_value": 0.206
+  },
+  {
+    "prefix": "Act as a Professor in Frequentist Statistics. ",
+    "jsd": 0.18168827146928712,
+    "jsd_std": 0.028102401546321314,
+    "p_value": 0.615
+  },
+  {
+    "prefix": "Act as a NeurIPS reviewer. ",
+    "jsd": 0.2317745233305474,
+    "jsd_std": 0.044475139405756696,
+    "p_value": 0.397
+  },
+  {
+    "prefix": "Act as a child. ",
+    "jsd": 0.44581269730782325,
+    "jsd_std": 0.023847571277500715,
+    "p_value": 0.0
+  }
+]
