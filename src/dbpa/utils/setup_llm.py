@@ -5,29 +5,29 @@
 # We demonstrate using the AzureOpenAI API
 # We also append an example of these two functions using open-source LLMs
 
-from dbpa.utils.openai_config import get_llm_config, get_embedding_config # You need to create this function
-from openai import AzureOpenAI
+# from dbpa.utils.openai_config import get_llm_config, get_embedding_config # You need to create this function
+# from openai import AzureOpenAI
 import numpy as np
 import transformers
 import torch
 from sentence_transformers import SentenceTransformer
 
-# Load configuration
-llm_config = get_llm_config()
-embedding_config = get_embedding_config()
+# # Load configuration
+# llm_config = get_llm_config()
+# embedding_config = get_embedding_config()
 
-# Initialize the AzureOpenAI client
-llm_client = AzureOpenAI(
-    api_key=llm_config["api_key"],
-    api_version=llm_config["api_version"],
-    azure_endpoint=llm_config["api_endpoint"],
-)
+# # Initialize the AzureOpenAI client
+# llm_client = AzureOpenAI(
+#     api_key=llm_config["api_key"],
+#     api_version=llm_config["api_version"],
+#     azure_endpoint=llm_config["api_endpoint"],
+# )
 
-embedding_client = AzureOpenAI(
-    api_key=embedding_config["api_key"],
-    api_version=embedding_config["api_version"],
-    azure_endpoint=embedding_config["api_endpoint"],
-)
+# embedding_client = AzureOpenAI(
+#     api_key=embedding_config["api_key"],
+#     api_version=embedding_config["api_version"],
+#     azure_endpoint=embedding_config["api_endpoint"],
+# )
 
 def get_embeddings(texts, model_id="azure"):
     """
