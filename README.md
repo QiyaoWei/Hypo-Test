@@ -137,6 +137,8 @@ This will:
 - Calculate perturbation distances
 - Generate plots and analysis
 
+Note that experiments are correspondingly named to match the paper, specifically Table 2
+
 # Programmatic Usage
 
 You can also use the core functionality directly in your Python code:
