@@ -1,6 +1,6 @@
-# Quantifying perturbation impacts for large language models
+# Statistical Hypothesis Testing for Auditing Robustness in Language Models
 
-This is the official implementation of DBPA ([Quantifying perturbation impacts for large language models](https://arxiv.org/pdf/2412.00868)). Our paper proposes a new method for detecting and quantifying perturbations in large language model (LLM) responses.
+This is the official implementation of Statistical Hypothesis Testing for Auditing Robustness in Language Models ([arxiv](https://arxiv.org/abs/2506.07947)). Our paper proposes a new method for detecting and quantifying perturbations in large language model (LLM) responses.
 
 # Overview
 
@@ -37,8 +37,6 @@ def get_embedding_config():
 ```
 
 Replace the placeholders `api_key, api_version, api_endpoint, model_deployment_id, embedding_model_deployment_id` with your actual configuration values.
-
-// ...existing code...
 
 # Repository Structure
 
@@ -186,17 +184,13 @@ We welcome contributions! Please ensure your code follows the existing style and
 # Citation
 
 ```bibtex
-@article{rauba2024quantifying,
-  title={Quantifying perturbation impacts for large language models},
+@article{rauba2025statistical,
+  title={Statistical Hypothesis Testing for Auditing Robustness in Language Models},
   author={Rauba, Paulius and Wei, Qiyao and van der Schaar, Mihaela},
-  journal={arXiv preprint arXiv:2412.00868},
-  year={2024}
+  journal={arXiv preprint arXiv:2506.07947},
+  year={2025}
 }
 ```
-
-# License
-
-[Add your license information here]
 
 # Support
 

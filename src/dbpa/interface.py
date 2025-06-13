@@ -1,12 +1,58 @@
 import argparse
 import json
 import sys
+import numpy as np
 from pathlib import Path
 
 # Add the src directory to the path so we can import from dbpa
 sys.path.append(str(Path(__file__).parent.parent))
 
-from dbpa.model.core import quantify_perturbations
+from dbpa.utils.setup_llm import get_responses, get_embeddings
+from dbpa.model.core import calculate_cosine_similarities, jensen_shannon_divergence_and_pvalue, compute_energy_distance_fn
+
+def quantify_perturbations(text_orig, change, method='energy', distance='cosine', num_permutations=500):
+    """
+    Quantify perturbations between original text and modified text using statistical measures.
+    
+    Args:
+        text_orig (str): Original text
+        change (dict): Dictionary mapping original phrases to replacement phrases
+        method (str): 'energy' for energy distance or 'jsd' for Jensen-Shannon divergence
+        distance (str): Distance metric for energy distance ('cosine', 'l1', 'l2')
+        num_permutations (int): Number of permutations for statistical testing
+    
+    Returns:
+        tuple: (statistic_value, p_value)
+    """
+    # Apply changes to create modified text
+    text_modified = text_orig
+    for original_phrase, replacement_phrase in change.items():
+        text_modified = text_modified.replace(original_phrase, replacement_phrase)
+    
+    # Generate LLM responses for both texts
+    baseline_responses = get_responses([text_orig])
+    perturbed_responses = get_responses([text_modified])
+    
+    # Get embeddings for the responses
+    baseline_embeddings = get_embeddings(baseline_responses)
+    perturbed_embeddings = get_embeddings(perturbed_responses)
+    
+    if method == 'energy':
+        statistic, p_value = compute_energy_distance_fn(
+            baseline_embeddings, perturbed_embeddings, distance=distance
+        )
+    elif method == 'jsd':
+        # Calculate cosine similarities
+        baseline_similarities = calculate_cosine_similarities(baseline_embeddings)
+        perturbed_similarities = calculate_cosine_similarities(perturbed_embeddings, baseline_embeddings)
+        
+        statistic, p_value, _ = jensen_shannon_divergence_and_pvalue(
+            baseline_similarities, perturbed_similarities, num_bootstraps=num_permutations
+        )
+    else:
+        raise ValueError(f"Invalid method: {method}. Use 'energy' or 'jsd'.")
+    
+    return statistic, p_value
 
 def main():
     parser = argparse.ArgumentParser(
@@ -119,6 +165,7 @@ Examples:
             print(f"Distance metric: {args.distance}")
         print(f"Permutations: {args.permutations}")
         print("-" * 50)
+        print("Generating LLM responses...")
     
     try:
         # Compute perturbation metrics
