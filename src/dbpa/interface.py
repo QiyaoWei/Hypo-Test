@@ -30,8 +30,8 @@ def quantify_perturbations(text_orig, change, method='energy', distance='cosine'
         text_modified = text_modified.replace(original_phrase, replacement_phrase)
     
     # Generate LLM responses for both texts
-    baseline_responses = get_responses([text_orig])
-    perturbed_responses = get_responses([text_modified])
+    baseline_responses = get_responses(text_orig)
+    perturbed_responses = get_responses(text_modified)
     
     # Get embeddings for the responses
     baseline_embeddings = get_embeddings(baseline_responses)
