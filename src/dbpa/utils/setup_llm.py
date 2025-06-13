@@ -29,13 +29,13 @@ from sentence_transformers import SentenceTransformer
 #     azure_endpoint=embedding_config["api_endpoint"],
 # )
 
-def get_embeddings(texts, model_id="azure"):
+def get_embeddings(texts, model_id="ada"):
     """
     Get embeddings for a list of texts using various providers.
 
     Args:
         texts (List[str]): Input text list.
-        model_id (str): One of ['azure', 'ada', 'kalm', 'jasper', 'stella'].
+        model_id (str): One of ['ada', 'kalm', 'jasper', 'stella'].
 
     Returns:
         List[np.ndarray]: Embeddings.
