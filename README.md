@@ -38,29 +38,154 @@ def get_embedding_config():
 
 Replace the placeholders `api_key, api_version, api_endpoint, model_deployment_id, embedding_model_deployment_id` with your actual configuration values.
 
+// ...existing code...
+
 # Repository Structure
 
 The core component of the repository is the `src` folder. Under `src`, there are three subcategories:
 
-1. `data` contains the necessary code to generate data for the experiments. For the purpose of this paper, we generate synthetic sentences, and focus on perturbing the immediate neighbors to each word in the sentence.
+1. **`data`** contains the necessary code to generate data for the experiments. For the purpose of this paper, we generate synthetic sentences, and focus on perturbing the immediate neighbors to each word in the sentence.
 
-2. `model` contains the core code to calculate distance between the original response and the perturbed response. For this paper, we provide two methods to approximate the distance---JSD and energy distance.
+2. **`model`** contains the core code to calculate distance between the original response and the perturbed response. For this paper, we provide two methods to approximate the distance---JSD and energy distance.
 
-3. `utils` contains the code to setup and query LLM + embedding models.
+3. **`utils`** contains the code to setup and query LLM + embedding models.
 
-Finally, `exp` contains all the sampled LLM responses for the experiments in the paper. All the raw LLM responses will fall under the folder `responses`, and the processed responses will fall under the folder `scores`, which calculates the distance between the original response and the perturbed response. In order to generate the responses from scratch, you should do `run.py`. Alternatively, you can only use the plotting bit of `run.py` and generate the plots in the paper directly from the calculated scores.
+Additionally, **`exp`** contains all the sampled LLM responses for the experiments in the paper. All the raw LLM responses are stored under the `responses` folder, and the processed responses are stored under the `scores` folder, which calculates the distance between the original response and the perturbed response.
 
-# Running the experiments
+# Quick Start - Command Line Interface
 
-1. Go through the prerequisities, and setup your API config. Crucially, you should make sure you can run `src/utils/openai_config.py` and `src/utils/setup_llm.py` before moving on to the next step.
+For quick text perturbation analysis, you can use our command-line interface:
 
-2. If you wish to run the entire experiment---including LLM generation---you should go to the corresponding experiment folder, and do `run.py`.
+## Basic Usage
 
-3. (To save some time) you can use the plotting bit in `run.py` and directly generate the plots in the paper from the calculated scores.
+```bash
+# Analyze a simple text perturbation
+python src/dbpa/interface.py --text "My age is 45 and I am male. What is my life expectancy?" --change "age is 45" "age is 55"
 
-# Cite
+# Multiple changes at once
+python src/dbpa/interface.py --text "I am 30 years old and live in NYC" --change "30 years old" "40 years old" "NYC" "LA"
 
+# Get detailed output with interpretation
+python src/dbpa/interface.py --text "Hello world" --change "Hello" "Hi" --verbose
 ```
+
+## Advanced Usage
+
+```bash
+# Use Jensen-Shannon divergence instead of energy distance
+python src/dbpa/interface.py --text "Test text" --change "Test" "Modified" --method jsd
+
+# Customize distance metric and number of permutations
+python src/dbpa/interface.py --text "Sample text" --change "Sample" "Example" --distance l2 --permutations 1000
+
+# Output results in JSON format
+python src/dbpa/interface.py --text "Hello world" --change "Hello" "Hi" --output-format json
+```
+
+## Using JSON Configuration Files
+
+For complex perturbations, create a JSON file with your changes:
+
+```bash
+# Create an example configuration file
+python src/dbpa/interface.py --create-example
+
+# Use the configuration file
+python src/dbpa/interface.py --text "My age is 45 and I am male. What is my life expectancy?" --change-file example_changes.json
+```
+
+Example JSON format:
+```json
+{
+  "age is 45": "age is 55",
+  "male": "female", 
+  "life expectancy": "retirement age"
+}
+```
+
+## Command Line Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--text` | Original text to analyze | Required |
+| `--change` | Pairs of original and replacement phrases | - |
+| `--change-file` | JSON file containing changes | - |
+| `--method` | Statistical method (`energy` or `jsd`) | `energy` |
+| `--distance` | Distance metric (`cosine`, `l1`, `l2`) | `cosine` |
+| `--permutations` | Number of permutations for testing | `500` |
+| `--output-format` | Output format (`plain` or `json`) | `plain` |
+| `--verbose` | Show detailed output and interpretation | `false` |
+
+# Running the Full Experiments
+
+## Prerequisites
+
+1. **Setup API Configuration**: Ensure you can run `src/utils/openai_config.py` and `src/utils/setup_llm.py` before proceeding.
+
+2. **Install Dependencies**: Make sure all requirements are installed via `pip install -e .`
+
+## Experiment Execution
+
+### Option 1: Full Experiment Pipeline
+If you wish to run the entire experiment including LLM generation:
+
+```bash
+cd exp/[experiment_folder]
+python run.py
+```
+
+This will:
+- Generate new LLM responses
+- Calculate perturbation distances
+- Generate plots and analysis
+
+### Option 2: Analysis Only
+To save time and use pre-computed responses, you can run only the analysis portion:
+
+```bash
+cd exp/[experiment_folder] 
+python run.py --analysis-only  # (modify run.py to support this flag)
+```
+
+This will directly generate plots from the calculated scores without calling the LLM API.
+
+## File Structure
+
+- **`responses/`**: Raw LLM responses from experiments
+- **`scores/`**: Processed distance calculations between original and perturbed responses
+- **`plots/`**: Generated visualization outputs
+
+# Programmatic Usage
+
+You can also use the core functionality directly in your Python code:
+
+```python
+from dbpa.model.core import quantify_perturbations
+
+# Basic usage
+text_orig = 'My age is 45 and I am male. What is my life expectancy?'
+change = {'age is 45': 'age is 55'}
+
+statistic, p_value = quantify_perturbations(text_orig, change)
+print(f"Statistic: {statistic:.6f}, P-value: {p_value:.6f}")
+
+# Advanced usage with custom parameters
+statistic, p_value = quantify_perturbations(
+    text_orig, 
+    change, 
+    method='jsd',  # or 'energy'
+    distance='l2',  # for energy method
+    num_permutations=1000
+)
+```
+
+# Contributing
+
+We welcome contributions! Please ensure your code follows the existing style and includes appropriate tests.
+
+# Citation
+
+```bibtex
 @article{rauba2024quantifying,
   title={Quantifying perturbation impacts for large language models},
   author={Rauba, Paulius and Wei, Qiyao and van der Schaar, Mihaela},
@@ -68,3 +193,11 @@ Finally, `exp` contains all the sampled LLM responses for the experiments in the
   year={2024}
 }
 ```
+
+# License
+
+[Add your license information here]
+
+# Support
+
+For questions or issues, please open a GitHub issue or contact the authors.
