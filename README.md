@@ -124,34 +124,18 @@ Example JSON format:
 
 ## Experiment Execution
 
-### Option 1: Full Experiment Pipeline
+### Full Experiment Pipeline
 If you wish to run the entire experiment including LLM generation:
 
 ```bash
-cd exp/[experiment_folder]
-python run.py
+cd exp/SFLLM
+python experiment_file.py
 ```
 
 This will:
 - Generate new LLM responses
 - Calculate perturbation distances
 - Generate plots and analysis
-
-### Option 2: Analysis Only
-To save time and use pre-computed responses, you can run only the analysis portion:
-
-```bash
-cd exp/[experiment_folder] 
-python run.py --analysis-only  # (modify run.py to support this flag)
-```
-
-This will directly generate plots from the calculated scores without calling the LLM API.
-
-## File Structure
-
-- **`responses/`**: Raw LLM responses from experiments
-- **`scores/`**: Processed distance calculations between original and perturbed responses
-- **`plots/`**: Generated visualization outputs
 
 # Programmatic Usage
 
