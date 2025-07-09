@@ -44,7 +44,8 @@ for embedding_model_id in embedding_models:
         # Embedding-based similarity & JSD
         perturbed_similarities = calculate_cosine_similarities(perturbed_embeddings, baseline_embeddings)
         jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(
-            baseline_similarities, perturbed_similarities
+            # baseline_similarities, perturbed_similarities
+            baseline_embeddings, perturbed_embeddings
         )
 
         # --- BLEU & ROUGE calculation ---
