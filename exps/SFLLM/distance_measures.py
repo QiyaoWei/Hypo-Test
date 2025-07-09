@@ -31,7 +31,7 @@ for prefix in tqdm(prefixes, desc="Processing prefixes"):
     
     perturbed_similarities = calculate_cosine_similarities(perturbed_embeddings, baseline_embeddings)
     
-    # jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(baseline_similarities, perturbed_similarities)
+    # jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(baseline_embeddings, perturbed_embeddings)
     energy, p_value = compute_energy_distance_fn(baseline_embeddings, perturbed_embeddings, distance='cosine')
     
     results.append({
