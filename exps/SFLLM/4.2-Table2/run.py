@@ -32,22 +32,19 @@ with open(f"raw_{model_id.split('/')[-1]}_prompt_robust_{seed}.json", 'w') as f:
 response_embeddings = {key: get_embeddings(responses[key]) for key in responses.keys()}
     
 response_similarities = {}
+response_stats = dict()
 for key, value in response_embeddings.items():
     if key == "base":
         response_similarities[key] = calculate_cosine_similarities(value)
     else:
-        response_similarities[key] = calculate_cosine_similarities(value, response_embeddings["base"]) 
-
-response_stats = dict()
-for key, value in response_similarities.items():
-    if key == "base":
-        continue
-    jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(response_similarities["base"], value)
-    response_stats[key] = {
-        'jsd': jsd,
-        'jsd_std': jsd_std,
-        'p_value': p_value
-    }
+        response_similarities[key] = calculate_cosine_similarities(value, response_embeddings["base"])
+        # jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(response_similarities["base"], value)
+        jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(response_embeddings["base"], value)
+        response_stats[key] = {
+            'jsd': jsd,
+            'jsd_std': jsd_std,
+            'p_value': p_value
+        }
 
 with open(f"{model_id.split('/')[-1]}_prompt_robust_{seed}.json", 'w') as f:
     json.dump(response_stats, f)
