@@ -47,7 +47,8 @@ def quantify_perturbations(text_orig, change, method='energy', distance='cosine'
         perturbed_similarities = calculate_cosine_similarities(perturbed_embeddings, baseline_embeddings)
         
         statistic, p_value, _ = jensen_shannon_divergence_and_pvalue(
-            baseline_similarities, perturbed_similarities, num_bootstraps=num_permutations
+            # baseline_similarities, perturbed_similarities, num_bootstraps=num_permutations
+            baseline_embeddings, perturbed_embeddings, num_bootstraps=num_permutations
         )
     else:
         raise ValueError(f"Invalid method: {method}. Use 'energy' or 'jsd'.")
