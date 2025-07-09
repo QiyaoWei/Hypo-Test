@@ -266,7 +266,8 @@ Response:"""
             
             # Calculate JSD and p-value for control
             control_jsd, control_p_value, control_jsd_std = jensen_shannon_divergence_and_pvalue(
-                baseline_similarities_cache[patient_idx], control_similarities
+                # baseline_similarities_cache[patient_idx], control_similarities
+                baseline_embedding_cache[patient_idx], control_embeddings
             )
             
             results['control_pvalues'].append(control_p_value)
