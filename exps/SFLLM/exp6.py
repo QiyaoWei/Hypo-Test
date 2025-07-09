@@ -58,7 +58,8 @@ for model_id in model_ids:
         control_embeddings = get_embeddings(control_responses, model_id="test")
         control_similarities = calculate_cosine_similarities(control_embeddings, baseline_embedding_cache[i])
         control_jsd, control_p_value, control_jsd_std = jensen_shannon_divergence_and_pvalue(
-            baseline_similarities_cache[i], control_similarities
+            # baseline_similarities_cache[i], control_similarities
+            baseline_embedding_cache[i], control_embeddings
         )
 
         # Target group (perturbed)
@@ -66,7 +67,8 @@ for model_id in model_ids:
         perturbed_embeddings = get_embeddings(perturbed_responses, model_id="test")
         perturbed_similarities = calculate_cosine_similarities(perturbed_embeddings, baseline_embedding_cache[i])
         perturbed_jsd, perturbed_p_value, perturbed_jsd_std = jensen_shannon_divergence_and_pvalue(
-            baseline_similarities_cache[i], perturbed_similarities
+            # baseline_similarities_cache[i], perturbed_similarities
+            baseline_embedding_cache[i], control_embeddings
         )
 
         result = {
