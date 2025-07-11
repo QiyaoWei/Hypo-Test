@@ -18,21 +18,21 @@ To use this repository, you will need an API to access the LLM. The simplest way
 
 ```
 def get_openai_config():
-    openai_config = {
+    openai_config = dict(
         api_key = api_key,
         api_version = api_version,
         api_endpoint = api_endpoint,
         model_deployment_id = model_deployment_id
-    }
+    )
     return openai_config
 
 def get_embedding_config():
-    ada_config = {
+    ada_config = dict(
         api_key = api_key,
         api_version = api_version,
         api_endpoint = api_endpoint,
         embedding_model_deployment_id = embedding_model_deployment_id
-    }
+    )
     return ada_config
 ```
 
