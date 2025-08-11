@@ -5,7 +5,7 @@
 # We demonstrate using the AzureOpenAI API
 # We also append an example of these two functions using open-source LLMs
 
-# from dbpa.utils.openai_config import get_llm_config, get_embedding_config # You need to create this function
+# from dbpa.utils.llm_config import get_llm_config, get_embedding_config # You need to create this function
 from openai import AzureOpenAI
 import numpy as np
 import transformers
