@@ -17,14 +17,14 @@ Also check `requirements.txt`.
 To use this repository, you will need an API to access the LLM. The simplest way to set this up is to create a Python file named `src/dbpa/utils/openai_config.py` with the following structure:
 
 ```
-def get_openai_config():
-    openai_config = dict(
+def get_llm_config():
+    llm_config = dict(
         api_key = api_key,
         api_version = api_version,
         api_endpoint = api_endpoint,
         model_deployment_id = model_deployment_id
     )
-    return openai_config
+    return llm_config
 
 def get_embedding_config():
     ada_config = dict(
