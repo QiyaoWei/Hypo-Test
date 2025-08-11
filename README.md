@@ -14,7 +14,7 @@ Also check `requirements.txt`.
 
 # Prerequisites
 
-To use this repository, you will need an API to access the LLM. The simplest way to set this up is to create a Python file named `src/dbpa/utils/openai_config.py` with the following structure:
+To use this repository, you will need an API to access the LLM. The simplest way to set this up is to create a Python file named `src/dbpa/utils/llm_config.py` with the following structure:
 
 ```
 def get_llm_config():
