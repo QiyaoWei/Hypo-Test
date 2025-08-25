@@ -10,7 +10,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from dbpa.utils.setup_llm import get_responses, get_embeddings
 from dbpa.model.core import calculate_cosine_similarities, jensen_shannon_divergence_and_pvalue, compute_energy_distance_fn
 
-def quantify_perturbations(text_orig, change, method='energy', distance='cosine', num_permutations=500):
+def quantify_perturbations(text_orig, change, method='energy', distance='cosine', num_permutations=500, llm_model='public', embedding_model='public'):
     """
     Quantify perturbations between original text and modified text using statistical measures.
     
@@ -20,6 +20,8 @@ def quantify_perturbations(text_orig, change, method='energy', distance='cosine'
         method (str): 'energy' for energy distance or 'jsd' for Jensen-Shannon divergence
         distance (str): Distance metric for energy distance ('cosine', 'l1', 'l2')
         num_permutations (int): Number of permutations for statistical testing
+        llm_model (str): Model ID for LLM ('public' uses GPT-2, no API needed)
+        embedding_model (str): Model ID for embeddings ('public' uses all-MiniLM-L6-v2, no API needed)
     
     Returns:
         tuple: (statistic_value, p_value)
@@ -30,12 +32,12 @@ def quantify_perturbations(text_orig, change, method='energy', distance='cosine'
         text_modified = text_modified.replace(original_phrase, replacement_phrase)
     
     # Generate LLM responses for both texts
-    baseline_responses = get_responses(text_orig)
-    perturbed_responses = get_responses(text_modified)
+    baseline_responses = get_responses(text_orig, model_id=llm_model)
+    perturbed_responses = get_responses(text_modified, model_id=llm_model)
     
     # Get embeddings for the responses
-    baseline_embeddings = get_embeddings(baseline_responses)
-    perturbed_embeddings = get_embeddings(perturbed_responses)
+    baseline_embeddings = get_embeddings(baseline_responses, model_id=embedding_model)
+    perturbed_embeddings = get_embeddings(perturbed_responses, model_id=embedding_model)
     
     if method == 'energy':
         statistic, p_value = compute_energy_distance_fn(
@@ -128,6 +130,18 @@ Examples:
         action='store_true',
         help='Show detailed output'
     )
+    
+    parser.add_argument(
+        '--llm-model',
+        default='public',
+        help='LLM model to use (default: public, uses GPT-2 which requires no API)'
+    )
+    
+    parser.add_argument(
+        '--embedding-model',
+        default='public',
+        help='Embedding model to use (default: public, uses all-MiniLM-L6-v2 which requires no API)'
+    )
 
     args = parser.parse_args()
     
@@ -165,8 +179,10 @@ Examples:
         if args.method == 'energy':
             print(f"Distance metric: {args.distance}")
         print(f"Permutations: {args.permutations}")
+        print(f"LLM model: {args.llm_model}")
+        print(f"Embedding model: {args.embedding_model}")
         print("-" * 50)
-        print("Generating LLM responses...")
+        print("Generating LLM responses (this may take a moment on first run to download models)...")
     
     try:
         # Compute perturbation metrics
@@ -175,7 +191,9 @@ Examples:
             change=changes,
             method=args.method,
             distance=args.distance,
-            num_permutations=args.permutations
+            num_permutations=args.permutations,
+            llm_model=args.llm_model,
+            embedding_model=args.embedding_model
         )
         
         # Output results
