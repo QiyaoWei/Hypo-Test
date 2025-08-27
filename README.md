@@ -10,7 +10,7 @@ This repository includes the necessary code, prompts, and collected responses to
 
 `pip install -e .`
 
-Also check `requirements.txt`.
+You should also make sure you have the packages in `requirements.txt`.
 
 # Prerequisites
 
