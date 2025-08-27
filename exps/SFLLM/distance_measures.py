@@ -46,7 +46,7 @@ for prefix in tqdm(prefixes, desc="Processing prefixes"):
 print("Results:")
 for result in results:
     print(f"Prefix: {result['prefix']}")
-    print(f"JSD: {result['jsd']:.6f} ± {result['jsd_std']:.6f}")
+    print(f"Energy Distance: {result['energy']:.6f}")
     print(f"p-value: {result['p_value']:.6f}")
     print()
 

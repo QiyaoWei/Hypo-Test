@@ -32,12 +32,11 @@ for prefix in tqdm(prefixes, desc="Processing prefixes"):
     perturbed_similarities = calculate_cosine_similarities(perturbed_embeddings, baseline_embeddings)
     
     # jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(baseline_similarities, perturbed_similarities)
-    jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(baseline_embeddings, perturbed_embeddings)
+    jsd, p_value = jensen_shannon_divergence_and_pvalue(baseline_embeddings, perturbed_embeddings)
     
     results.append({
         'prefix': prefix,
         'jsd': jsd,
-        'jsd_std': jsd_std,
         'p_value': p_value
     })
 
@@ -45,7 +44,7 @@ for prefix in tqdm(prefixes, desc="Processing prefixes"):
 print("Results:")
 for result in results:
     print(f"Prefix: {result['prefix']}")
-    print(f"JSD: {result['jsd']:.6f} ± {result['jsd_std']:.6f}")
+    print(f"JSD: {result['jsd']:.6f}")
     print(f"p-value: {result['p_value']:.6f}")
     print()
 
@@ -96,25 +95,24 @@ sorted_results = top_group + bottom_group
 # Extract data
 prefixes = [result['prefix'].replace('Act as ', '').strip().rstrip('.') for result in sorted_results]
 jsds = [result['jsd'] for result in sorted_results]
-jsd_stds = [result['jsd_std'] for result in sorted_results]
 p_values = [result['p_value'] for result in sorted_results]
 
 # Create the plot
 fig, ax = plt.subplots(figsize=(16, 5))
 
-# Plot horizontal error bars
-for i, (jsd, std, p_value) in enumerate(zip(jsds, jsd_stds, p_values)):
+# Plot horizontal points without error bars
+for i, (jsd, p_value) in enumerate(zip(jsds, p_values)):
     color = SIGNIFICANT_COLOR if p_value < 0.05 else INSIGNIFICANT_COLOR
-    ax.errorbar(jsd, len(prefixes) - 1 - i, xerr=std, fmt='o', capsize=8, capthick=3, 
-                color=color, ecolor=color, markersize=14, linewidth=3.5,
-                label='Significant' if p_value < 0.05 and i == 0 else ('Not Significant' if p_value >= 0.05 and i == len(top_group) else ''))
+    ax.plot(jsd, len(prefixes) - 1 - i, 'o', 
+            color=color, markersize=14,
+            label='Significant' if p_value < 0.05 and i == 0 else ('Not Significant' if p_value >= 0.05 and i == len(top_group) else ''))
 
 # Customize the plot
 ax.set_yticks(range(len(prefixes) - 1, -1, -1))
 prefixes_title = [x.title() for x in prefixes]
 ax.set_yticklabels(prefixes_title)
-ax.set_xlabel('$\omega$', fontsize=MEDIUM_SIZE)
-ax.set_title('$\omega$ for various input perturbations', fontsize=BIGGER_SIZE)
+ax.set_xlabel(r'$\omega$', fontsize=MEDIUM_SIZE)
+ax.set_title(r'$\omega$ for various input perturbations', fontsize=BIGGER_SIZE)
 
 # Add grid lines
 #ax.grid(True, axis='x', linestyle='--', alpha=0.7)
@@ -124,7 +122,7 @@ plt.ylim(-1, len(prefixes))
 
 # Add p-value annotations
 for i, p_value in enumerate(p_values):
-    ax.annotate(f'p = {p_value:.2f}', (max(jsds) + max(jsd_stds), len(prefixes) - 1 - i), 
+    ax.annotate(f'p = {p_value:.2f}', (max(jsds) * 1.05, len(prefixes) - 1 - i), 
                 xytext=(5, 0), textcoords='offset points', 
                 va='center', fontsize=SMALL_SIZE)
 

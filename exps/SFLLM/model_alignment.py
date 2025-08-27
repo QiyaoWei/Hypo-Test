@@ -36,7 +36,7 @@ for model_id in model_ids:
 
     # Baseline prompt (no length argument)
     baseline_prompt = get_prompt("John", prefix=baseline_prefix)
-    baseline_responses = get_responses(baseline_prompt, model_id=model_id)
+    baseline_responses = get_responses(baseline_prompt)
     baseline_embeddings = get_embeddings(baseline_responses)
     baseline_similarities = calculate_cosine_similarities(baseline_embeddings)
 
@@ -46,11 +46,11 @@ for model_id in model_ids:
     # Iterate over prefixes (no length variation)
     for prefix in tqdm(prefixes, desc=f"Processing for {model_id}", total=len(prefixes)):
         perturbed_prompt = get_prompt("John", prefix=prefix)
-        perturbed_responses = get_responses(perturbed_prompt, model_id=model_id)
+        perturbed_responses = get_responses(perturbed_prompt)
         perturbed_embeddings = get_embeddings(perturbed_responses)
 
         perturbed_similarities = calculate_cosine_similarities(perturbed_embeddings, baseline_embeddings)
-        jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(
+        jsd, p_value = jensen_shannon_divergence_and_pvalue(
             # baseline_similarities, perturbed_similarities
             baseline_embeddings, perturbed_embeddings
         )
@@ -59,12 +59,11 @@ for model_id in model_ids:
             'model_id': model_id,
             'prefix': prefix,
             'jsd': jsd,
-            'jsd_std': jsd_std,
             'p_value': p_value
         }
         model_results.append(result)
 
-        print(f"  Prefix: {prefix.strip()} | JSD: {jsd:.4f} ± {jsd_std:.4f} | p={p_value:.4f}")
+        print(f"  Prefix: {prefix.strip()} | JSD: {jsd:.4f} | p={p_value:.4f}")
 
     all_results.extend(model_results)
 

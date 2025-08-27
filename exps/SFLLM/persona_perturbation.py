@@ -40,7 +40,7 @@ for prefix, length in tqdm(zip(prefixes, lengths), desc="Processing prefixes", t
 
     perturbed_similarities = calculate_cosine_similarities(perturbed_embeddings, baseline_embeddings)
 
-    jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(
+    jsd, p_value = jensen_shannon_divergence_and_pvalue(
         # baseline_similarities, perturbed_similarities)
         baseline_embeddings, perturbed_embeddings)
 
@@ -48,7 +48,6 @@ for prefix, length in tqdm(zip(prefixes, lengths), desc="Processing prefixes", t
         'prefix': prefix,
         'length': length,
         'jsd': jsd,
-        'jsd_std': jsd_std,
         'p_value': p_value
     })
 
@@ -56,7 +55,7 @@ for prefix, length in tqdm(zip(prefixes, lengths), desc="Processing prefixes", t
 print("Results:")
 for result in results:
     print(f"Prefix: {result['prefix']} (Length: {result['length']})")
-    print(f"JSD: {result['jsd']:.6f} ± {result['jsd_std']:.6f}")
+    print(f"JSD: {result['jsd']:.6f}")
     print(f"p-value: {result['p_value']:.6f}")
     print()
 

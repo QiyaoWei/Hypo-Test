@@ -39,8 +39,8 @@ for model_id in model_ids:
     baseline_embedding_cache = {}
     baseline_similarities_cache = {}
     for i, (baseline_prompt, _) in enumerate(prompt_pairs):
-        baseline_responses = get_responses(baseline_prompt, model_id=model_id)
-        baseline_embeddings = get_embeddings(baseline_responses, model_id="test")
+        baseline_responses = get_responses(baseline_prompt)
+        baseline_embeddings = get_embeddings(baseline_responses)
         baseline_embedding_cache[i] = baseline_embeddings
         baseline_similarities = calculate_cosine_similarities(baseline_embeddings)
         baseline_similarities_cache[i] = baseline_similarities
@@ -54,19 +54,19 @@ for model_id in model_ids:
         print(f"\n→ Processing Pair {i + 1}")
 
         # Control group (repeat run of the baseline)
-        control_responses = get_responses(baseline_prompt, model_id=model_id)
-        control_embeddings = get_embeddings(control_responses, model_id="test")
+        control_responses = get_responses(baseline_prompt)
+        control_embeddings = get_embeddings(control_responses)
         control_similarities = calculate_cosine_similarities(control_embeddings, baseline_embedding_cache[i])
-        control_jsd, control_p_value, control_jsd_std = jensen_shannon_divergence_and_pvalue(
+        control_jsd, control_p_value = jensen_shannon_divergence_and_pvalue(
             # baseline_similarities_cache[i], control_similarities
             baseline_embedding_cache[i], control_embeddings
         )
 
         # Target group (perturbed)
-        perturbed_responses = get_responses(perturbed_prompt, model_id=model_id)
-        perturbed_embeddings = get_embeddings(perturbed_responses, model_id="test")
+        perturbed_responses = get_responses(perturbed_prompt)
+        perturbed_embeddings = get_embeddings(perturbed_responses)
         perturbed_similarities = calculate_cosine_similarities(perturbed_embeddings, baseline_embedding_cache[i])
-        perturbed_jsd, perturbed_p_value, perturbed_jsd_std = jensen_shannon_divergence_and_pvalue(
+        perturbed_jsd, perturbed_p_value = jensen_shannon_divergence_and_pvalue(
             # baseline_similarities_cache[i], perturbed_similarities
             baseline_embedding_cache[i], control_embeddings
         )
@@ -78,10 +78,8 @@ for model_id in model_ids:
             'perturbed_prompt': perturbed_prompt,
             'control_jsd': control_jsd,
             'control_p_value': control_p_value,
-            'control_jsd_std': control_jsd_std,
             'perturbed_jsd': perturbed_jsd,
-            'perturbed_p_value': perturbed_p_value,
-            'perturbed_jsd_std': perturbed_jsd_std
+            'perturbed_p_value': perturbed_p_value
         }
         model_results.append(result)
 

@@ -1,5 +1,5 @@
-python alignment.py 9
-python alignment.py 68
-python alignment.py 145
-python alignment.py 5998
-python alignment.py 66215
+python run.py 9
+python run.py 68
+python run.py 145
+python run.py 5998
+python run.py 66215

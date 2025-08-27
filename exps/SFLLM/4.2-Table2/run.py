@@ -23,10 +23,10 @@ other_prompts = ["Please generate cardiovascular disease (CVD) guidelines from t
 "Given John's health data: 70 years old, Chinese, BMI of 30, blood pressure of 114/61 mmHg, total cholesterol of 6.7 mmol/L, HDL cholesterol of 1.0 mmol/L, a current smoker, no diabetes, and a family history of CVD, what are the relevant NICE guidelines for CVD risk management?",]
 
 
-responses = {"base": get_responses(prompt, model_id)}
+responses = {"base": get_responses(prompt)}
 for index, other_prompt in enumerate(other_prompts):
     prompt = other_prompt
-    responses[index] = get_responses(prompt, model_id)
+    responses[index] = get_responses(prompt)
 with open(f"raw_{model_id.split('/')[-1]}_prompt_robust_{seed}.json", 'w') as f:
     json.dump(responses, f)
 response_embeddings = {key: get_embeddings(responses[key]) for key in responses.keys()}
@@ -39,17 +39,18 @@ for key, value in response_embeddings.items():
     else:
         response_similarities[key] = calculate_cosine_similarities(value, response_embeddings["base"])
         # jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(response_similarities["base"], value)
-        jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(response_embeddings["base"], value)
+        jsd, p_value = jensen_shannon_divergence_and_pvalue(response_embeddings["base"], value)
         response_stats[key] = {
             'jsd': jsd,
-            'jsd_std': jsd_std,
             'p_value': p_value
         }
 
 with open(f"{model_id.split('/')[-1]}_prompt_robust_{seed}.json", 'w') as f:
     json.dump(response_stats, f)
 
-# plotting
+# plotting - only run if all necessary files exist
+import os
+
 model_ids = ["HuggingFaceTB/SmolLM-135M", "Gustavosta/MagicPrompt-Stable-Diffusion", "microsoft/Phi-3-mini-4k-instruct", "openai-community/gpt2", "mistralai/Mistral-7B-Instruct-v0.2", "meta-llama/Meta-Llama-3.1-8B-Instruct", "google/gemma-2-9b-it", "gpt-35-1106-vdsT-AE", "SWNorth-gpt-4-0613-20231016"]
 
 def count_change(model_id):
@@ -69,15 +70,32 @@ def count_change(model_id):
     effect_size = []
     for data in [data1, data2, data3, data4, data5]:
         p_value.append(sum([1 for value in data.values() if value["p_value"] < 0.05]) / 8)
-        effect_size.extend([value["effect_size"] for value in data.values()])
+        effect_size.extend([value["jsd"] for value in data.values()])
     return p_value, effect_size
-        
-all_change = dict()
+
+# Check if all required files exist before attempting to generate statistics
+all_files_exist = True
 for model_id in model_ids:
     model = model_id.split("/")[-1]
-    all_change[model] = count_change(model)
+    for seed in [9, 68, 145, 5998, 66215]:
+        if not os.path.exists(f"{model}_prompt_robust_{seed}.json"):
+            all_files_exist = False
+            break
+    if not all_files_exist:
+        break
 
-for model, (p_value, effect_size) in all_change.items():
-    print(model)
-    print(f"{np.mean(p_value)} +- {np.std(p_value)}")
-    print(f"{np.mean(effect_size)} +- {np.std(effect_size)}")
+if all_files_exist:
+    print("\n=== Generating statistics across all models and seeds ===")
+    all_change = dict()
+    for model_id in model_ids:
+        model = model_id.split("/")[-1]
+        all_change[model] = count_change(model)
+
+    for model, (p_value, effect_size) in all_change.items():
+        print(model)
+        print(f"P-value rejection rate: {np.mean(p_value):.4f} +- {np.std(p_value):.4f}")
+        print(f"Effect size (JSD): {np.mean(effect_size):.4f} +- {np.std(effect_size):.4f}")
+        print()
+else:
+    print("\nNote: Not all result files are present. Run all models and seeds to generate complete statistics.")
+    print("Use: bash run.sh")

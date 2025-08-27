@@ -5,3 +5,5 @@ tqdm
 matplotlib
 openai
 accelerate
+nltk
+rouge_score

@@ -216,8 +216,6 @@ Response:"""
             'target_pvalues': [],
             'control_jsd': [],
             'target_jsd': [],
-            'control_jsd_std': [],
-            'target_jsd_std': []
         }
         
         print(f"Generating {n_patients} patient profiles...")
@@ -236,8 +234,8 @@ Response:"""
             
             # Generate baseline responses and embeddings
             baseline_prompt = self.create_cvd_prompt(profile)
-            baseline_responses = get_responses(baseline_prompt, model_id=self.model_id)
-            baseline_embeddings = get_embeddings(baseline_responses, model_id="kalm")
+            baseline_responses = get_responses(baseline_prompt)
+            baseline_embeddings = get_embeddings(baseline_responses)
             baseline_embedding_cache[i] = baseline_embeddings
             baseline_similarities = calculate_cosine_similarities(baseline_embeddings)
             baseline_similarities_cache[i] = baseline_similarities
@@ -258,21 +256,20 @@ Response:"""
             
             # Generate control responses (repeat run of the baseline)
             control_prompt = self.create_cvd_prompt(original_profile)
-            control_responses = get_responses(control_prompt, model_id=self.model_id)
-            control_embeddings = get_embeddings(control_responses, model_id="kalm")
+            control_responses = get_responses(control_prompt)
+            control_embeddings = get_embeddings(control_responses)
             control_similarities = calculate_cosine_similarities(
                 control_embeddings, baseline_embedding_cache[patient_idx]
             )
             
             # Calculate JSD and p-value for control
-            control_jsd, control_p_value, control_jsd_std = jensen_shannon_divergence_and_pvalue(
+            control_jsd, control_p_value = jensen_shannon_divergence_and_pvalue(
                 # baseline_similarities_cache[patient_idx], control_similarities
                 baseline_embedding_cache[patient_idx], control_embeddings
             )
             
             results['control_pvalues'].append(control_p_value)
             results['control_jsd'].append(control_jsd)
-            results['control_jsd_std'].append(control_jsd_std)
         
         print("Applying target perturbations...")
         
@@ -288,20 +285,19 @@ Response:"""
             
             # Generate perturbed responses
             perturbed_prompt = self.create_cvd_prompt(perturbed_profile)
-            perturbed_responses = get_responses(perturbed_prompt, model_id=self.model_id)
-            perturbed_embeddings = get_embeddings(perturbed_responses, model_id="kalm")
+            perturbed_responses = get_responses(perturbed_prompt)
+            perturbed_embeddings = get_embeddings(perturbed_responses)
             perturbed_similarities = calculate_cosine_similarities(
                 perturbed_embeddings, baseline_embedding_cache[patient_idx]
             )
             
             # Calculate JSD and p-value for target
-            perturbed_jsd, perturbed_p_value, perturbed_jsd_std = jensen_shannon_divergence_and_pvalue(
+            perturbed_jsd, perturbed_p_value = jensen_shannon_divergence_and_pvalue(
                 baseline_similarities_cache[patient_idx], perturbed_similarities
             )
             
             results['target_pvalues'].append(perturbed_p_value)
             results['target_jsd'].append(perturbed_jsd)
-            results['target_jsd_std'].append(perturbed_jsd_std)
         
         return results
     

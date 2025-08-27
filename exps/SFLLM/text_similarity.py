@@ -33,17 +33,17 @@ for embedding_model_id in embedding_models:
     # Generate baseline prompt & responses
     baseline_prompt = get_prompt("John", prefix=baseline_prefix)  # no length param now
     baseline_responses = get_responses(baseline_prompt)
-    baseline_embeddings = get_embeddings(baseline_responses, model_id=embedding_model_id)
+    baseline_embeddings = get_embeddings(baseline_responses)
     baseline_similarities = calculate_cosine_similarities(baseline_embeddings)
 
     for prefix in tqdm(prefixes, desc=f"Processing prefixes with {embedding_model_id}"):
         perturbed_prompt = get_prompt("John", prefix=prefix)
         perturbed_responses = get_responses(perturbed_prompt)
-        perturbed_embeddings = get_embeddings(perturbed_responses, model_id=embedding_model_id)
+        perturbed_embeddings = get_embeddings(perturbed_responses)
 
         # Embedding-based similarity & JSD
         perturbed_similarities = calculate_cosine_similarities(perturbed_embeddings, baseline_embeddings)
-        jsd, p_value, jsd_std = jensen_shannon_divergence_and_pvalue(
+        jsd, p_value = jensen_shannon_divergence_and_pvalue(
             # baseline_similarities, perturbed_similarities
             baseline_embeddings, perturbed_embeddings
         )
@@ -78,7 +78,6 @@ for embedding_model_id in embedding_models:
             'embedding_model': embedding_model_id,
             'prefix': prefix,
             'jsd': jsd,
-            'jsd_std': jsd_std,
             'p_value': p_value,
             'bleu': avg_bleu,
             'rouge1': avg_rouge1,
@@ -90,7 +89,7 @@ for embedding_model_id in embedding_models:
 print("\nResults:")
 for result in results:
     print(f"Embedding model: {result['embedding_model']}, Prefix: {result['prefix']}")
-    print(f"JSD: {result['jsd']:.6f} ± {result['jsd_std']:.6f}, p-value: {result['p_value']:.6f}")
+    print(f"JSD: {result['jsd']:.6f}, p-value: {result['p_value']:.6f}")
     print(f"BLEU: {result['bleu']:.4f}, ROUGE-1: {result['rouge1']:.4f}, ROUGE-2: {result['rouge2']:.4f}, ROUGE-L: {result['rougeL']:.4f}")
     print()
 
