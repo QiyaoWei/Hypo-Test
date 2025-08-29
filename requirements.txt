@@ -7,3 +7,4 @@ openai
 accelerate
 nltk
 rouge_score
+pandas
