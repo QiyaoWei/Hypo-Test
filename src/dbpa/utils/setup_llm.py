@@ -137,7 +137,7 @@ def get_responses(prompt, model_id="public"):
     # Generate multiple responses
     outputs = generator(
         prompt, 
-        max_length=256, 
+        max_new_tokens=256, 
         truncation=True, 
         num_return_sequences=min(20, generator.model.config.vocab_size if hasattr(generator.model.config, 'vocab_size') else 20),
         do_sample=True,

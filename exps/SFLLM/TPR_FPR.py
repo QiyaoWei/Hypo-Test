@@ -8,6 +8,17 @@ from typing import List, Dict, Tuple, Any
 import json
 import os
 from tqdm import tqdm
+import warnings
+
+# Set environment variable to avoid tokenizers parallelism warning
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+# Suppress specific deprecation warnings
+warnings.filterwarnings("ignore", message=".*encoder_attention_mask.*", category=FutureWarning)
+
+# Suppress transformers logging messages
+from transformers import logging
+logging.set_verbosity_error()
 
 from dbpa.utils.setup_llm import get_responses, get_embeddings
 from dbpa.model.core import calculate_cosine_similarities, jensen_shannon_divergence_and_pvalue
@@ -293,7 +304,7 @@ Response:"""
             
             # Calculate JSD and p-value for target
             perturbed_jsd, perturbed_p_value = jensen_shannon_divergence_and_pvalue(
-                baseline_similarities_cache[patient_idx], perturbed_similarities
+                baseline_embedding_cache[patient_idx], perturbed_embeddings
             )
             
             results['target_pvalues'].append(perturbed_p_value)
@@ -448,4 +459,4 @@ if __name__ == "__main__":
         "openai-community/gpt2"
     ]
     
-    results = run_cvd_tpr_fpr_experiment(model_ids, n_patients=20, n_control=10, n_target=10)
+    results = run_cvd_tpr_fpr_experiment(model_ids, n_patients=2, n_control=1, n_target=1)
