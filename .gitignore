@@ -54,3 +54,5 @@ MANIFEST
 .python-version
 openai_config.py
 llm_config.py
+exps/SFLLM/*.json
+exps/SFLLM/*.pdf
