@@ -184,47 +184,43 @@ Examples:
         print("-" * 50)
         print("Generating LLM responses (this may take a moment on first run to download models)...")
     
-    try:
-        # Compute perturbation metrics
-        statistic, p_value = quantify_perturbations(
-            text_orig=args.text,
-            change=changes,
-            method=args.method,
-            distance=args.distance,
-            num_permutations=args.permutations,
-            llm_model=args.llm_model,
-            embedding_model=args.embedding_model
-        )
-        
-        # Output results
-        if args.output_format == 'json':
-            result = {
-                'original_text': args.text,
-                'changes': changes,
-                'method': args.method,
-                'statistic': float(statistic),
-                'p_value': float(p_value)
-            }
-            if args.method == 'energy':
-                result['distance_metric'] = args.distance
-            
-            print(json.dumps(result, indent=2))
-        else:
-            print(f"Statistic: {statistic:.6f}")
-            print(f"P-value: {p_value:.6f}")
-            
-            if args.verbose:
-                print(f"\nInterpretation:")
-                if p_value < 0.05:
-                    print("- The perturbation is statistically significant (p < 0.05)")
-                else:
-                    print("- The perturbation is not statistically significant (p >= 0.05)")
-                
-                print(f"- Higher statistic values indicate larger perturbations")
+    # Compute perturbation metrics
+    statistic, p_value = quantify_perturbations(
+        text_orig=args.text,
+        change=changes,
+        method=args.method,
+        distance=args.distance,
+        num_permutations=args.permutations,
+        llm_model=args.llm_model,
+        embedding_model=args.embedding_model
+    )
     
-    except Exception as e:
-        print(f"Error during computation: {e}")
-        sys.exit(1)
+    # Output results
+    if args.output_format == 'json':
+        result = {
+            'original_text': args.text,
+            'changes': changes,
+            'method': args.method,
+            'statistic': float(statistic),
+            'p_value': float(p_value)
+        }
+        if args.method == 'energy':
+            result['distance_metric'] = args.distance
+        
+        print(json.dumps(result, indent=2))
+    else:
+        print(f"Statistic: {statistic:.6f}")
+        print(f"P-value: {p_value:.6f}")
+        
+        if args.verbose:
+            print(f"\nInterpretation:")
+            if p_value < 0.05:
+                print("- The perturbation is statistically significant (p < 0.05)")
+            else:
+                print("- The perturbation is not statistically significant (p >= 0.05)")
+            
+            print(f"- Higher statistic values indicate larger perturbations")
+
 
 def create_example_change_file():
     """Create an example JSON change file"""
