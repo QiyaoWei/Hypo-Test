@@ -184,7 +184,6 @@ Examples:
         print("-" * 50)
         print("Generating LLM responses (this may take a moment on first run to download models)...")
     
-    # try:
     # Compute perturbation metrics
     statistic, p_value = quantify_perturbations(
         text_orig=args.text,
@@ -221,10 +220,7 @@ Examples:
                 print("- The perturbation is not statistically significant (p >= 0.05)")
             
             print(f"- Higher statistic values indicate larger perturbations")
-    
-    # except Exception as e:
-    #     print(f"Error during computation: {e}")
-    #     sys.exit(1)
+
 
 def create_example_change_file():
     """Create an example JSON change file"""
